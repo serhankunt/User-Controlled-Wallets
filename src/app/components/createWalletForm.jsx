@@ -1,13 +1,15 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
 import { ToastContainer, toast } from "react-toastify";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { W3SSdk } from "@circle-fin/w3s-pw-web-sdk";
 
-let sdk;
+// Bileşeni dinamik olarak yükle
+const CreateWalletForm = () => {
+  let sdk;
 
-function CreateWalletForm() {
   useEffect(() => {
     sdk = new W3SSdk();
   }, []);
@@ -19,24 +21,16 @@ function CreateWalletForm() {
     return defaultValue;
   };
 
-  const [appId, setAppId] = useState(
-    localStorage.getItem("appId") || "someAppId"
-  );
-  const [userToken, setUserToken] = useState(
-    localStorage.getItem("userToken") || "someUserToken"
-  );
-  const [encryptionKey, setEncryptionKey] = useState(
-    localStorage.getItem("encryptionKey") || "someEncryptionKey"
-  );
-  const [challengeId, setChallengeId] = useState(
-    localStorage.getItem("challengeId") || "someChallengeId"
-  );
+  const [appId, setAppId] = useState(() => getInitialState("appId", "someAppId"));
+  const [userToken, setUserToken] = useState(() => getInitialState("userToken", "someUserToken"));
+  const [encryptionKey, setEncryptionKey] = useState(() => getInitialState("encryptionKey", "someEncryptionKey"));
+  const [challengeId, setChallengeId] = useState(() => getInitialState("challengeId", "someChallengeId"));
 
   const onChangeHandler = useCallback(
     (setState, key) => (e) => {
       const value = e.target.value;
       setState(value);
-      if(typeof window !== "undefined"){
+      if (typeof window !== "undefined") {
         localStorage.setItem(key, value);
       }
     },
@@ -96,6 +90,9 @@ function CreateWalletForm() {
       <ToastContainer />
     </div>
   );
-}
+};
 
-export default CreateWalletForm;
+// Dinamik olarak yüklenecek bileşeni oluşturun
+const DynamicCreateWalletForm = dynamic(() => Promise.resolve(CreateWalletForm), { ssr: false });
+
+export default DynamicCreateWalletForm;
