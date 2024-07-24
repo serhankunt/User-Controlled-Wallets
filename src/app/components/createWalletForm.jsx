@@ -12,6 +12,13 @@ function CreateWalletForm() {
     sdk = new W3SSdk();
   }, []);
 
+  const getInitialState = (key, defaultValue) => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(key) || defaultValue;
+    }
+    return defaultValue;
+  };
+
   const [appId, setAppId] = useState(
     localStorage.getItem("appId") || "someAppId"
   );
@@ -29,7 +36,9 @@ function CreateWalletForm() {
     (setState, key) => (e) => {
       const value = e.target.value;
       setState(value);
-      localStorage.setItem(key, value);
+      if(typeof window !== "undefined"){
+        localStorage.setItem(key, value);
+      }
     },
     []
   );
